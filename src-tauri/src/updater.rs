@@ -2,13 +2,17 @@
 //!
 //! Vérification au lancement puis toutes les six heures ; la nouvelle version
 //! est téléchargée, vérifiée (signature minisign) et installée en arrière-plan.
-//! Elle prend effet au prochain lancement : le panneau propose alors
-//! « Redémarrer », sans jamais interrompre une reformulation.
+//! L'app redémarre ensuite d'elle-même dès qu'elle est inactive (aucune
+//! reformulation en cours, panneau fermé) : un redémarrage d'une seconde,
+//! invisible pour une app de barre de menu. Panneau ouvert, un bouton le
+//! propose.
 
 use std::sync::Mutex;
 use std::time::Duration;
 
 use tauri::{AppHandle, Emitter, Manager};
+
+use crate::AppState;
 use tauri_plugin_updater::UpdaterExt;
 
 const FIRST_CHECK: Duration = Duration::from_secs(15);
@@ -55,7 +59,25 @@ async fn check(app: &AppHandle) {
                 *pending = Some(update.version.clone());
             }
             let _ = app.emit("panel-shown", ());
+            restart_when_idle(app).await;
         }
         Err(error) => log::warn!("mise à jour : installation impossible ({error})"),
+    }
+}
+
+/// Redémarre dès que personne n'utilise l'app : ni reformulation en cours,
+/// ni panneau ouvert.
+async fn restart_when_idle(app: &AppHandle) {
+    loop {
+        let busy = app.state::<AppState>().engine.is_busy();
+        let panel_open = app
+            .get_webview_window("main")
+            .and_then(|window| window.is_visible().ok())
+            .unwrap_or(false);
+        if !busy && !panel_open {
+            log::info!("mise à jour : redémarrage");
+            app.restart();
+        }
+        tokio::time::sleep(Duration::from_secs(5)).await;
     }
 }

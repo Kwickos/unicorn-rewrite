@@ -10,7 +10,7 @@ import type { AppModel } from '@/hooks/use-app'
 import { useDocumentLocale, useTheme } from '@/hooks/use-theme'
 import { demoParams, isDesktop, native, type Snapshot } from '@/lib/desktop'
 import { detectLocale, useLocale, useT } from '@/lib/i18n'
-import { iconButton, quietAction, rowButton } from '@/lib/styles'
+import { iconButton, rowButton } from '@/lib/styles'
 
 type View = 'main' | 'settings' | 'onboarding' | 'models'
 
@@ -114,42 +114,38 @@ export function RewritePanel({ app, snapshot }: { app: AppModel; snapshot: Snaps
         />
       </div>
 
-      <footer className="flex shrink-0 items-center gap-0.5 p-1.5 pt-0">
-        <button type="button" onClick={() => setView('settings')} className={cn(rowButton, 'flex-1')}>
-          <Settings2 className="size-4" />
-          {t('settings')}
-        </button>
-
+      <footer className="flex shrink-0 flex-col gap-0.5 p-1.5 pt-0">
         {snapshot.updateReady && (
           <button
             type="button"
             onClick={() => isDesktop && void native.restartApp()}
-            className={cn(quietAction, 'view-enter')}
+            className={cn(rowButton, 'view-enter w-full text-foreground')}
           >
-            <ArrowUpCircle className="size-3.5" />
+            <ArrowUpCircle className="size-4" />
             {t('updateReady', { version: snapshot.updateReady })}
           </button>
         )}
 
-        {/* Sort du flux tant qu'il n'y a rien à restaurer : le pied de
-            panneau ne change pas de composition. */}
-        <button
-          type="button"
-          onClick={() => isDesktop && void native.restoreLast()}
-          tabIndex={status.canRestore ? 0 : -1}
-          aria-hidden={!status.canRestore}
-          aria-label={t('restoreHint')}
-          title={t('restoreHint')}
-          className={cn(
-            iconButton,
-            'transition-[opacity,translate,color,background-color]',
-            status.canRestore
-              ? 'pointer-events-auto translate-x-0 opacity-100'
-              : 'pointer-events-none translate-x-1 opacity-0',
+        <div className="flex items-center gap-0.5">
+          <button type="button" onClick={() => setView('settings')} className={cn(rowButton, 'min-w-0 flex-1')}>
+            <Settings2 className="size-4" />
+            {t('settings')}
+          </button>
+
+          {/* N'occupe aucune place tant qu'il n'y a rien à restaurer : le
+              bouton Réglages garde toute la largeur. */}
+          {status.canRestore && (
+            <button
+              type="button"
+              onClick={() => isDesktop && void native.restoreLast()}
+              aria-label={t('restoreHint')}
+              title={t('restoreHint')}
+              className={cn(iconButton, 'view-enter')}
+            >
+              <RotateCcw className="size-4" />
+            </button>
           )}
-        >
-          <RotateCcw className="size-4" />
-        </button>
+        </div>
       </footer>
     </div>
   )

@@ -22,7 +22,7 @@ Sélectionnez du texte dans n'importe quelle app macOS, appuyez sur un raccourci
 - **Les modèles récents via OpenRouter.** Liste triée par date de sortie, filtrable par vitesse et par coût. L'app suit les nouvelles versions du modèle choisi (`qwen3.8-flash` → `qwen3.9-flash`) et ne change jamais de modèle d'elle-même.
 - **Respectueuse du texte.** Langue, sens, noms, chiffres, dates, liens, tutoiement ou vouvoiement sont conservés. Rien n'est ajouté : ni salutation, ni signature, ni promesse. Une phrase qui ressemble à une consigne (« ignore les instructions précédentes… ») est reformulée comme les autres.
 - **Ne perd rien.** Si le champ a changé pendant le traitement, rien n'est collé et le résultat s'affiche avec un bouton Copier. Le bouton ↺ remet le texte d'origine.
-- **Se met à jour seule.** Les nouvelles versions s'installent en arrière-plan et s'appliquent au redémarrage.
+- **Se met à jour seule.** Les nouvelles versions s'installent en arrière-plan, puis l'app redémarre d'elle-même dès qu'elle est inactive (aucune reformulation en cours, panneau fermé).
 
 Une reformulation coûte en général une fraction de centime.
 

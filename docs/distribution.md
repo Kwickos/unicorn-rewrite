@@ -7,7 +7,8 @@ update archive with the key in `~/.tauri/unicorn-rewrite.key` (never
 committed), writes `latest.json` and creates the GitHub release. The app reads
 `https://github.com/Kwickos/unicorn-rewrite/releases/latest/download/latest.json`
 at launch and every six hours, verifies the signature against the public key in
-`tauri.conf.json`, installs in the background and offers a restart.
+`tauri.conf.json`, installs in the background and restarts once idle (no rewrite running, panel
+closed).
 
 Losing the private key means existing installs can no longer update: keep a
 backup.

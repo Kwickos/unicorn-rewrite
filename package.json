@@ -1,7 +1,7 @@
 {
   "name": "unicorn-rewrite",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "description": "Corriger et reformuler le texte sélectionné dans n'importe quelle app macOS, d'un raccourci.",
   "scripts": {

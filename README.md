@@ -28,7 +28,7 @@ Select text in any macOS app, press a shortcut, and it gets fixed or rewritten i
 - **Any recent model through OpenRouter.** Pick from a list sorted by release date and filtered by speed and cost. The app follows new versions of the model you picked (`qwen3.8-flash` → `qwen3.9-flash`) and never switches to a different model on its own.
 - **Careful with your text.** It keeps the language, meaning, names, numbers, dates, links and tone of address. It never adds greetings, signatures or promises. Text that looks like an instruction ("ignore previous instructions…") is rewritten like any other sentence.
 - **Never loses anything.** If the field changed while the model was working, nothing is pasted and the result is shown with a Copy button. The ↺ button puts the original back.
-- **Updates itself.** New versions install in the background and apply on the next restart.
+- **Updates itself.** New versions install in the background, and the app restarts on its own once it's idle (no rewrite running, panel closed).
 
 A rewrite usually costs a small fraction of a cent.
 
