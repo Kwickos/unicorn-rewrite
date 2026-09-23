@@ -52,7 +52,10 @@ pub fn install_backdrop(window: &WebviewWindow) -> tauri::Result<()> {
         layer.setMasksToBounds(true);
     }
 
-    if available!(macos = 26.0) {
+    // Développement : `UNICORN_REWRITE_NO_GLASS=1` montre le fond des macOS
+    // antérieurs à 26 (matériau « popover »), pour le vérifier sans ancien Mac.
+    let force_fallback = cfg!(debug_assertions) && std::env::var_os("UNICORN_REWRITE_NO_GLASS").is_some();
+    if available!(macos = 26.0) && !force_fallback {
         // Le verre se glisse sous la page, dans le conteneur de wry, et suit
         // la fenêtre quand elle change de taille.
         let glass = NSGlassEffectView::new(mtm);
