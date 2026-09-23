@@ -146,7 +146,7 @@ export const WEB_SNAPSHOT: Snapshot = {
   modelChoice: true,
   mock: false,
   updateReady: null,
-  version: '0.2.1',
+  version: '0.2.2',
 }
 
 /** Extrait réel du catalogue OpenRouter (23/09/2026), pour l'aperçu web. */

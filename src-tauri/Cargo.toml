@@ -1,6 +1,6 @@
 [package]
 name = "unicorn-rewrite"
-version = "0.2.1"
+version = "0.2.2"
 description = "Corriger et reformuler le texte sélectionné, depuis la barre de menu"
 authors = ["Digital Unicorn"]
 license = ""

@@ -39,6 +39,6 @@ existing users.
 
 ## Intel Macs
 
-`rustup target add x86_64-apple-darwin`, then build with
-`--target universal-apple-darwin` and add a `darwin-x86_64` entry to
-`latest.json`.
+Releases are universal binaries (`--target universal-apple-darwin`): the same
+`.dmg` and update archive serve Apple Silicon and Intel, and `latest.json`
+lists both `darwin-aarch64` and `darwin-x86_64`.

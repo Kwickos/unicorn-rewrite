@@ -12,20 +12,23 @@ REPO="Kwickos/unicorn-rewrite"
 KEY_FILE="${TAURI_KEY_FILE:-$HOME/.tauri/unicorn-rewrite.key}"
 VERSION=$(node -p "require('./src-tauri/tauri.conf.json').version")
 TAG="v$VERSION"
-ARCH=$(uname -m | sed 's/arm64/aarch64/')
+# App universelle : Apple Silicon et Intel dans un seul binaire.
+TARGET="universal-apple-darwin"
 
 [ -f "$KEY_FILE" ] || { echo "Clé de mise à jour absente : $KEY_FILE" >&2; exit 1; }
 gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1 && { echo "$TAG existe déjà." >&2; exit 1; }
 
 export TAURI_SIGNING_PRIVATE_KEY="$(cat "$KEY_FILE")"
 export TAURI_SIGNING_PRIVATE_KEY_PASSWORD="${TAURI_SIGNING_PRIVATE_KEY_PASSWORD:-}"
-pnpm tauri build
+rustup target add aarch64-apple-darwin x86_64-apple-darwin >/dev/null
+pnpm tauri build --target "$TARGET"
 
-BUNDLE=src-tauri/target/release/bundle
+BUNDLE="src-tauri/target/$TARGET/release/bundle"
 OUT=$(mktemp -d)
 # GitHub remplace les espaces des noms de fichiers : on les nomme nous-mêmes.
-cp "$BUNDLE/macos/Unicorn Rewrite.app.tar.gz" "$OUT/UnicornRewrite_${ARCH}.app.tar.gz"
-cp "$BUNDLE/dmg/Unicorn Rewrite_${VERSION}_${ARCH}.dmg" "$OUT/UnicornRewrite_${VERSION}_${ARCH}.dmg"
+cp "$BUNDLE/macos/Unicorn Rewrite.app.tar.gz" "$OUT/UnicornRewrite_universal.app.tar.gz"
+cp "$BUNDLE/dmg/Unicorn Rewrite_${VERSION}_universal.dmg" "$OUT/UnicornRewrite_${VERSION}_universal.dmg"
+URL="https://github.com/$REPO/releases/download/$TAG/UnicornRewrite_universal.app.tar.gz"
 SIGNATURE=$(cat "$BUNDLE/macos/Unicorn Rewrite.app.tar.gz.sig")
 
 cat > "$OUT/latest.json" <<JSON
@@ -34,16 +37,14 @@ cat > "$OUT/latest.json" <<JSON
   "notes": "Voir https://github.com/$REPO/releases/tag/$TAG",
   "pub_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
   "platforms": {
-    "darwin-$ARCH": {
-      "signature": "$SIGNATURE",
-      "url": "https://github.com/$REPO/releases/download/$TAG/UnicornRewrite_${ARCH}.app.tar.gz"
-    }
+    "darwin-aarch64": { "signature": "$SIGNATURE", "url": "$URL" },
+    "darwin-x86_64": { "signature": "$SIGNATURE", "url": "$URL" }
   }
 }
 JSON
 
 gh release create "$TAG" --repo "$REPO" --title "$TAG" --generate-notes \
-  "$OUT/UnicornRewrite_${VERSION}_${ARCH}.dmg" \
-  "$OUT/UnicornRewrite_${ARCH}.app.tar.gz" \
+  "$OUT/UnicornRewrite_${VERSION}_universal.dmg" \
+  "$OUT/UnicornRewrite_universal.app.tar.gz" \
   "$OUT/latest.json"
 echo "Publié : https://github.com/$REPO/releases/tag/$TAG"

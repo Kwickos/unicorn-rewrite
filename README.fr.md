@@ -28,7 +28,7 @@ Une reformulation coûte en général une fraction de centime.
 
 ## Installation
 
-1. Téléchargez le `.dmg` de la [dernière release](https://github.com/Kwickos/unicorn-rewrite/releases/latest) et glissez l'app dans Applications.
+1. Téléchargez le `.dmg` (une seule version, pour Apple Silicon et Intel) de la [dernière release](https://github.com/Kwickos/unicorn-rewrite/releases/latest) et glissez l'app dans Applications.
 2. L'app n'est pas encore notarisée : macOS peut bloquer le premier lancement. Clic droit sur l'app → **Ouvrir**, ou :
    ```sh
    xattr -dr com.apple.quarantine "/Applications/Unicorn Rewrite.app"
@@ -45,6 +45,5 @@ Le texte sélectionné part chez OpenRouter, puis chez l'hébergeur du modèle c
 - Dans les éditeurs riches (Notes, Mail, Google Docs), la mise en forme à l'intérieur de la sélection est perdue.
 - Le bouton ↺ ne fonctionne que dans les apps qui exposent leur texte par Accessibility ; ailleurs, le <kbd>⌘</kbd><kbd>Z</kbd> de l'app fait l'affaire.
 - Dans les apps Electron, un changement de sélection dans le même champ pendant le traitement n'est pas détecté.
-- Apple Silicon uniquement pour l'instant.
 
 Le fonctionnement détaillé, le développement et la publication sont décrits dans le [README anglais](README.md).

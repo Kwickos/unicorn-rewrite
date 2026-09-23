@@ -8,7 +8,7 @@ Select text in any macOS app, press a shortcut, and it gets fixed or rewritten i
 
 [![Latest release](https://img.shields.io/github/v/release/Kwickos/unicorn-rewrite?label=release&color=111)](https://github.com/Kwickos/unicorn-rewrite/releases/latest)
 ![macOS 12+](https://img.shields.io/badge/macOS-12%2B-111?logo=apple)
-![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-arm64-111)
+![Apple Silicon and Intel](https://img.shields.io/badge/Apple%20Silicon%20%2B%20Intel-universal-111)
 ![Tauri 2](https://img.shields.io/badge/Tauri-2-111?logo=tauri)
 [![Downloads](https://img.shields.io/github/downloads/Kwickos/unicorn-rewrite/total?color=111)](https://github.com/Kwickos/unicorn-rewrite/releases)
 
@@ -34,7 +34,7 @@ A rewrite usually costs a small fraction of a cent.
 
 ## Install
 
-1. Download the `.dmg` from the [latest release](https://github.com/Kwickos/unicorn-rewrite/releases/latest) and drag the app to Applications.
+1. Download the `.dmg` (one universal build for Apple Silicon and Intel) from the [latest release](https://github.com/Kwickos/unicorn-rewrite/releases/latest) and drag the app to Applications.
 2. The app isn't notarized yet, so macOS may block the first launch. Right-click the app → **Open**, or run:
    ```sh
    xattr -dr com.apple.quarantine "/Applications/Unicorn Rewrite.app"
@@ -77,7 +77,6 @@ The selected text is sent to OpenRouter, and from there to the host of the model
 - In rich editors (Notes, Mail, Google Docs), formatting inside the selection (bold, links) is lost.
 - The ↺ button only works in apps that expose their text through Accessibility. Elsewhere, the app's own <kbd>⌘</kbd><kbd>Z</kbd> works.
 - In Electron apps, changing the selection inside the same field during a rewrite isn't detected.
-- Apple Silicon only for now.
 
 Per-app notes: [docs/compatibility.md](docs/compatibility.md).
 
