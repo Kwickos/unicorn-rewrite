@@ -8,7 +8,7 @@ import { SettingsView } from '@/components/settings-view'
 import { ResultCard, StatusLine } from '@/components/status-line'
 import type { AppModel } from '@/hooks/use-app'
 import { useDocumentLocale, useTheme } from '@/hooks/use-theme'
-import { isDesktop, native, type Snapshot } from '@/lib/desktop'
+import { demoParams, isDesktop, native, type Snapshot } from '@/lib/desktop'
 import { detectLocale, useLocale, useT } from '@/lib/i18n'
 import { iconButton, quietAction, rowButton } from '@/lib/styles'
 
@@ -22,7 +22,11 @@ export function RewritePanel({ app, snapshot }: { app: AppModel; snapshot: Snaps
   useTheme(settings.theme)
   useDocumentLocale(locale)
 
-  const [chosenView, setView] = useState<View>(() => (settings.onboarded ? 'main' : 'onboarding'))
+  const [chosenView, setView] = useState<View>(() => {
+    const demo = demoParams.get('view')
+    if (demo === 'settings' || demo === 'models' || demo === 'onboarding') return demo
+    return settings.onboarded ? 'main' : 'onboarding'
+  })
   const [focusKey, setFocusKey] = useState(false)
 
   // Permission retirée depuis le dernier lancement : l'accueil l'explique.

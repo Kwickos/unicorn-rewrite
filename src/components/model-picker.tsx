@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Check, LoaderCircle, X } from 'lucide-react'
 import { cn } from 'cn'
-import { isDesktop, native, type CatalogModel, type ErrorCode, type Settings } from '@/lib/desktop'
+import { DEMO_CATALOG, isDesktop, native, type CatalogModel, type ErrorCode, type Settings } from '@/lib/desktop'
 import { useLocale, useT } from '@/lib/i18n'
 import { filterModels, formatCents, formatMonth, PRICE_CAPS, shortName } from '@/lib/models'
 import { errorMessage } from '@/lib/status'
@@ -39,7 +39,7 @@ type Props = {
 export function ModelPicker({ current, onPicked, onClose }: Props) {
   const t = useT()
   const locale = useLocale()
-  const [models, setModels] = useState<CatalogModel[] | null>(null)
+  const [models, setModels] = useState<CatalogModel[] | null>(isDesktop ? null : DEMO_CATALOG)
   const [error, setError] = useState<ErrorCode | null>(null)
   const [fastOnly, setFastOnly] = useState(true)
   const [maxCents, setMaxCents] = useState<number | null>(0.05)

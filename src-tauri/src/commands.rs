@@ -34,8 +34,8 @@ pub fn get_state(app: AppHandle, state: State<'_, AppState>, pending: State<'_, 
         settings: state.settings.get(),
         has_key: secrets::has_api_key(),
         trusted: ax::is_trusted(false),
-        model: state.router.model(secrets::api_key().as_deref()),
-        model_choice: secrets::api_key().as_deref().and_then(ai::detect) == Some(ai::ProviderKind::OpenRouter),
+        model: state.router.model(),
+        model_choice: true,
         mock: state.mock.is_some(),
         update_ready: pending.0.lock().ok().and_then(|pending| pending.clone()),
         version: app.package_info().version.to_string(),
@@ -102,7 +102,7 @@ pub enum KeyCheck {
 #[tauri::command]
 pub async fn save_api_key(state: State<'_, AppState>, key: String) -> Result<KeyCheck, ErrorCode> {
     let key = key.trim().to_owned();
-    if key.is_empty() || key.chars().any(char::is_whitespace) || key.len() > 200 {
+    if !ai::is_openrouter_key(&key) || key.chars().any(char::is_whitespace) || key.len() > 200 {
         return Err(ErrorCode::InvalidKey);
     }
     let outcome = state.router.verify_key(&key).await;
@@ -145,11 +145,11 @@ pub fn open_accessibility_settings() {
     let _ = std::process::Command::new("open").arg(ACCESSIBILITY_PANE).spawn();
 }
 
-/// Page des clés Cerebras. Adresse fixe : la page ne
+/// Page des clés OpenRouter. Adresse fixe : la page ne
 /// peut pas faire ouvrir une URL de son choix.
 #[tauri::command]
 pub fn open_key_page() {
-    let _ = std::process::Command::new("open").arg("https://cloud.cerebras.ai/platform").spawn();
+    let _ = std::process::Command::new("open").arg("https://openrouter.ai/keys").spawn();
 }
 
 #[tauri::command]
@@ -199,7 +199,7 @@ pub async fn list_models(state: State<'_, AppState>) -> Result<Vec<CatalogModel>
 
 #[tauri::command]
 pub fn set_model(state: State<'_, AppState>, model: String) -> Settings {
-    state.router.set_openrouter_model(&model);
+    state.router.set_model(&model);
     state.settings.update(|settings| {
         settings.model = Some(model);
         settings.upgraded_from = None;
@@ -211,14 +211,14 @@ pub fn set_model(state: State<'_, AppState>, model: String) -> Settings {
 pub async fn check_model_upgrade(app: &AppHandle) {
     use tauri::{Emitter, Manager};
     let state = app.state::<AppState>();
-    let Some(key) = secrets::api_key().filter(|key| ai::detect(key) == Some(ai::ProviderKind::OpenRouter)) else {
+    let Some(key) = secrets::api_key().filter(|key| ai::is_openrouter_key(key)) else {
         return;
     };
     let Ok(catalog) = state.router.openrouter.catalog(&key).await else { return };
-    let current = state.router.openrouter_model();
+    let current = state.router.model();
     if let Some(next) = openrouter::successor(&current, &catalog) {
         log::info!("modèle mis à jour : {current} → {}", next.id);
-        state.router.set_openrouter_model(&next.id);
+        state.router.set_model(&next.id);
         let next_id = next.id.clone();
         state.settings.update(|settings| {
             settings.model = Some(next_id);

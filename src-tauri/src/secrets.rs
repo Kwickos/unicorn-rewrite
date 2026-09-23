@@ -30,9 +30,11 @@ pub fn api_key() -> Option<String> {
     if cache.is_none() {
         *cache = read_keychain();
     }
-    cache.clone()
+    cache.clone().filter(|key| crate::ai::is_openrouter_key(key))
 }
 
+/// Seule une clé OpenRouter compte ; une clé d'un autre fournisseur, laissée
+/// par une ancienne version, est ignorée.
 pub fn has_api_key() -> bool {
     api_key().is_some()
 }

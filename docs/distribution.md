@@ -1,50 +1,43 @@
-# Signature et notarisation (distribution future)
+# Signing, notarization and updates
 
-Aujourd'hui : usage personnel, signature **Apple Development** (certificat
-local). Le Mac qui a construit l'app l'ouvre sans avertissement ; un autre Mac
-la bloquerait (Gatekeeper).
+## Updates
 
-Pour distribuer :
+Releases are published with `scripts/release.sh`. It builds the app, signs the
+update archive with the key in `~/.tauri/unicorn-rewrite.key` (never
+committed), writes `latest.json` and creates the GitHub release. The app reads
+`https://github.com/Kwickos/unicorn-rewrite/releases/latest/download/latest.json`
+at launch and every six hours, verifies the signature against the public key in
+`tauri.conf.json`, installs in the background and offers a restart.
 
-1. **Compte Apple Developer Program** (99 $/an), puis certificat
-   **Developer ID Application** (Xcode → Settings → Accounts → Manage
-   Certificates, ou developer.apple.com).
-2. **Identifiant d'app** : `com.digitalunicorn.unicorn-rewrite` (déjà dans
-   `tauri.conf.json`).
-3. **Runtime renforcé** : Tauri l'active à la signature. Aucun droit
-   particulier n'est nécessaire : l'Accessibilité est une autorisation TCC
-   accordée par l'utilisateur, pas un *entitlement*. Pas de sandbox App Store :
-   une app sandboxée ne peut ni lire la sélection d'une autre app ni
-   synthétiser ⌘C/⌘V. **Pas de Mac App Store** donc, distribution directe
-   seulement.
-4. **Build signé et notarisé** :
+Losing the private key means existing installs can no longer update: keep a
+backup.
 
-   ```bash
-   export APPLE_SIGNING_IDENTITY="Developer ID Application: Nom (TEAMID)"
-   # Notarisation par clé API App Store Connect (recommandé)…
-   export APPLE_API_ISSUER=… APPLE_API_KEY=… APPLE_API_KEY_PATH=/chemin/AuthKey_XXXX.p8
-   # …ou par identifiant Apple
-   # export APPLE_ID=… APPLE_PASSWORD=<mot de passe d'app> APPLE_TEAM_ID=…
-   pnpm app:build
+## Notarization
+
+Current builds are signed with an Apple Development certificate, so Gatekeeper
+warns on other Macs. To remove that warning:
+
+1. Join the Apple Developer Program and create a **Developer ID Application**
+   certificate.
+2. Build with notarization credentials:
+   ```sh
+   export APPLE_SIGNING_IDENTITY="Developer ID Application: Name (TEAMID)"
+   export APPLE_API_ISSUER=… APPLE_API_KEY=… APPLE_API_KEY_PATH=/path/AuthKey_XXXX.p8
+   scripts/release.sh
    ```
+   Tauri signs with the hardened runtime, submits to Apple and staples the
+   ticket.
+3. Check: `spctl -a -vvv -t install "src-tauri/target/release/bundle/macos/Unicorn Rewrite.app"`.
 
-   Tauri signe l'app, l'envoie au service de notarisation, puis agrafe le
-   ticket (*staple*). Vérification :
+No entitlement is needed: Accessibility is a permission the user grants, not an
+entitlement. The app can't be sandboxed (it reads other apps' selections), so
+the Mac App Store is not an option.
 
-   ```bash
-   spctl -a -vvv -t install "src-tauri/target/release/bundle/macos/Unicorn Rewrite.app"
-   xcrun stapler validate "src-tauri/target/release/bundle/dmg/Unicorn Rewrite_0.1.0_aarch64.dmg"
-   ```
+Changing the signing identity resets the Accessibility permission once for
+existing users.
 
-5. **Universel Intel + Apple Silicon** (facultatif) :
-   `rustup target add x86_64-apple-darwin` puis
-   `pnpm tauri build --target universal-apple-darwin`.
-6. **Mises à jour** : `tauri-plugin-updater`, avec une clé de signature des mises
-   à jour (`pnpm tauri signer generate`) et une URL HTTPS.
-7. **Avant de publier** : passer à une clé Gemini avec facturation (conditions
-   EEE/UK/CH), rédiger une politique de confidentialité, et remplacer
-   « clé fournie par l'utilisateur » par un proxy si l'app doit fonctionner
-   sans compte Google.
+## Intel Macs
 
-Changer d'identité de signature invalide l'autorisation Accessibilité déjà
-accordée : les utilisateurs devront la réaccorder une fois.
+`rustup target add x86_64-apple-darwin`, then build with
+`--target universal-apple-darwin` and add a `darwin-x86_64` entry to
+`latest.json`.

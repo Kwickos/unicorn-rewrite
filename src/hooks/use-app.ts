@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
+  demoParams,
   IDLE_STATUS,
   isDesktop,
   listenNative,
@@ -17,7 +18,9 @@ import {
  */
 export function useApp() {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(isDesktop ? null : WEB_SNAPSHOT)
-  const [status, setStatus] = useState<Status>(IDLE_STATUS)
+  const [status, setStatus] = useState<Status>(() =>
+    demoParams.get('view') === 'error' ? { ...IDLE_STATUS, phase: 'error', error: 'noSelection' } : IDLE_STATUS,
+  )
 
   const refresh = useCallback(async () => {
     if (!isDesktop) return

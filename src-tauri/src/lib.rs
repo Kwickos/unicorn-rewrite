@@ -222,7 +222,7 @@ pub fn run() {
             );
             let shortcut_spec = settings.get().shortcut;
             if let Some(model) = settings.get().model {
-                router.set_openrouter_model(&model);
+                router.set_model(&model);
             }
             app.manage(AppState { engine, settings, router: router.clone(), mock });
             // Première connexion ouverte dès le lancement.

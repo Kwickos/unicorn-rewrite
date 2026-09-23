@@ -119,6 +119,15 @@ export const IDLE_STATUS: Status = {
   operation: 0,
 }
 
+/**
+ * Aperçu web (captures du README) : `?locale=en&view=settings|models|error`.
+ * Aucun appel natif.
+ */
+export const demoParams =
+  typeof window !== 'undefined' && !isDesktop
+    ? new URLSearchParams(window.location.search)
+    : new URLSearchParams()
+
 /** État de démonstration pour la version web : aucun appel natif. */
 export const WEB_SNAPSHOT: Snapshot = {
   settings: {
@@ -126,19 +135,31 @@ export const WEB_SNAPSHOT: Snapshot = {
     customInstruction: '',
     shortcut: 'Control+Alt+KeyR',
     theme: 'system',
-    locale: null,
+    locale: (demoParams.get('locale') as Locale | null) ?? null,
     onboarded: true,
     model: null,
     upgradedFrom: null,
   },
-  hasKey: false,
-  trusted: false,
-  model: 'qwen/qwen3.8-flash',
+  hasKey: true,
+  trusted: true,
+  model: 'inception/mercury-2.5',
   modelChoice: true,
   mock: false,
   updateReady: null,
-  version: '0.1.0',
+  version: '0.2.0',
 }
+
+/** Extrait réel du catalogue OpenRouter (23/09/2026), pour l'aperçu web. */
+export const DEMO_CATALOG: CatalogModel[] = [
+  { id: 'upstage/solar-mini4', name: 'Upstage: Solar Mini 4', created: 1790160358, costCents: 0.01, fast: false, throughput: null, reasoningMandatory: false },
+  { id: 'openai/gpt-6-luna', name: 'OpenAI: GPT-6 Luna', created: 1790100786, costCents: 0.023, fast: false, throughput: null, reasoningMandatory: false },
+  { id: 'deepseek/deepseek-v4.1-flash', name: 'DeepSeek: DeepSeek V4.1 Flash', created: 1789021285, costCents: 0.03, fast: true, throughput: null, reasoningMandatory: false },
+  { id: 'inception/mercury-2.5', name: 'Inception: Mercury 2.5', created: 1788892137, costCents: 0.0077, fast: true, throughput: null, reasoningMandatory: false },
+  { id: 'nex-agi/nex-n2.5-mini', name: 'Nex AGI: Nex-N2.5-Mini', created: 1788890061, costCents: 0.005, fast: true, throughput: null, reasoningMandatory: false },
+  { id: 'ibm-granite/granite-4.2-8b', name: 'IBM: Granite 4.2 8B', created: 1788206780, costCents: 0.0123, fast: true, throughput: null, reasoningMandatory: false },
+  { id: 'nvidia/nemotron-3.5-lightning', name: 'NVIDIA: Nemotron 3.5 Lightning', created: 1786452751, costCents: 0.0124, fast: true, throughput: null, reasoningMandatory: false },
+  { id: 'inclusionai/ling-3.0-flash', name: 'inclusionAI: Ling 3.0 Flash', created: 1784818580, costCents: 0.0036, fast: true, throughput: null, reasoningMandatory: false },
+]
 
 async function call<T>(command: string, args?: Record<string, unknown>): Promise<T> {
   const { invoke } = await import('@tauri-apps/api/core')

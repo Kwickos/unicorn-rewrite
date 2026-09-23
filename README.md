@@ -1,107 +1,104 @@
+<div align="center">
+
+<img src="src-tauri/icons/128x128@2x.png" width="96" alt="" />
+
 # Unicorn Rewrite
 
-Une petite app de barre de menu pour macOS : vous sélectionnez du texte dans
-n'importe quelle app, vous appuyez sur un raccourci, et la sélection est
-corrigée ou reformulée sur place.
+Select text in any macOS app, press a shortcut, and it gets fixed or rewritten in place.
 
-Pas de fenêtre, pas de copier-coller à faire, pas de compte. L'app ne fait que
-remplacer le texte : elle n'envoie jamais rien à votre place.
+[![Latest release](https://img.shields.io/github/v/release/Kwickos/unicorn-rewrite?label=release&color=111)](https://github.com/Kwickos/unicorn-rewrite/releases/latest)
+![macOS 12+](https://img.shields.io/badge/macOS-12%2B-111?logo=apple)
+![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-arm64-111)
+![Tauri 2](https://img.shields.io/badge/Tauri-2-111?logo=tauri)
+[![Downloads](https://img.shields.io/github/downloads/Kwickos/unicorn-rewrite/total?color=111)](https://github.com/Kwickos/unicorn-rewrite/releases)
 
-## Installation
+[Français](README.fr.md)
 
-1. Téléchargez le `.dmg` de la [dernière release](https://github.com/Kwickos/unicorn-rewrite/releases/latest)
-   et glissez l'app dans Applications.
-2. Au premier lancement, macOS peut bloquer l'app (elle n'est pas notarisée) :
-   clic droit sur l'app → **Ouvrir**, ou
-   `xattr -dr com.apple.quarantine "/Applications/Unicorn Rewrite.app"`.
-3. Autorisez **Accessibilité** quand l'app le demande (Réglages Système →
-   Confidentialité et sécurité → Accessibilité). C'est ce qui lui permet de
-   lire la sélection et de la remplacer.
-4. Collez une clé API dans le panneau.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/hero-dark.png" />
+  <img src="docs/images/hero-light.png" alt="The menu bar panel: writing profiles, the OpenRouter model picker filtered by speed and cost, and settings" width="820" />
+</picture>
 
-Apple Silicon uniquement pour l'instant. Les mises à jour s'installent
-d'elles-mêmes ; un bouton « Mettre à jour » apparaît dans le panneau quand une
-nouvelle version est prête.
+</div>
 
-## Clé API
+## What it does
 
-Le fournisseur est reconnu à la clé, il n'y a rien d'autre à régler :
+- **One shortcut, no window.** Select, press <kbd>⌃</kbd><kbd>⌥</kbd><kbd>R</kbd>, keep typing. The selection is replaced where it is.
+- **Six profiles.** Fix only, Natural, Professional, Warm, Direct and concise, or your own instruction.
+- **Any recent model through OpenRouter.** Pick from a list sorted by release date and filtered by speed and cost. The app follows new versions of the model you picked (`qwen3.8-flash` → `qwen3.9-flash`) and never switches to a different model on its own.
+- **Careful with your text.** It keeps the language, meaning, names, numbers, dates, links and tone of address. It never adds greetings, signatures or promises. Text that looks like an instruction ("ignore previous instructions…") is rewritten like any other sentence.
+- **Never loses anything.** If the field changed while the model was working, nothing is pasted and the result is shown with a Copy button. The ↺ button puts the original back.
+- **Updates itself.** New versions install in the background and apply on the next restart.
 
-| Clé | Fournisseur | Modèle |
-| --- | --- | --- |
-| `sk-or-…` | [OpenRouter](https://openrouter.ai/keys) | au choix, dans Réglages → Modèle |
-| `csk-…` | [Cerebras](https://cloud.cerebras.ai) | `qwen-3.8-27b` |
-| `gsk_…` | [Groq](https://console.groq.com/keys) | `openai/gpt-oss-20b` |
-| `sk-…` | [Qwen Cloud](https://www.qwencloud.com) | `qwen3.8-flash` |
-| `AIza…` | [Gemini](https://aistudio.google.com/apikey) | `gemini-3.5-flash-lite` |
+A rewrite usually costs a small fraction of a cent.
 
-La clé est stockée dans le Trousseau macOS.
+## Install
 
-Avec OpenRouter, la liste des modèles est triée par date de sortie et filtrable
-par vitesse et par coût. Le modèle choisi ne change pas tout seul, sauf pour sa
-propre version suivante (`qwen3.8-flash` → `qwen3.9-flash`) ou s'il est retiré.
+1. Download the `.dmg` from the [latest release](https://github.com/Kwickos/unicorn-rewrite/releases/latest) and drag the app to Applications.
+2. The app isn't notarized yet, so macOS may block the first launch. Right-click the app → **Open**, or run:
+   ```sh
+   xattr -dr com.apple.quarantine "/Applications/Unicorn Rewrite.app"
+   ```
+3. Allow **Accessibility** when asked (System Settings → Privacy & Security → Accessibility). The app needs it to read and replace the selection.
+4. Paste an [OpenRouter key](https://openrouter.ai/keys) (`sk-or-…`). It's stored in the macOS Keychain.
 
-Une reformulation coûte en général une fraction de centime.
+## How a rewrite works
 
-## Utilisation
-
-- **⌃⌥R** (modifiable dans les réglages) : reformule la sélection avec le
-  profil actif.
-- **Échap** pendant le traitement : annule.
-- **↺** dans le panneau : remet le texte d'origine.
-
-Profils : Corriger uniquement, Naturel, Professionnel, Chaleureux, Direct et
-concis, Personnalisé (votre propre consigne).
-
-Quel que soit le profil, le texte garde sa langue, son sens, les noms, chiffres,
-dates, liens et le tutoiement ou vouvoiement. Rien n'est ajouté : ni salutation,
-ni signature, ni promesse. Une instruction écrite dans le texte sélectionné est
-traitée comme du texte, pas comme une consigne.
-
-## Ce qui se passe quand vous appuyez sur le raccourci
-
-1. L'app lit la sélection par Accessibility. Si l'app cible ne l'expose pas
-   (Discord, Slack et autres apps Electron), elle la copie, puis remet votre
-   presse-papiers tel qu'il était.
-2. Le texte part chez le fournisseur, avec le profil. Un seul appel, sans
-   historique.
-3. Avant de remplacer, l'app vérifie que vous êtes toujours dans le même champ.
-   Sinon, rien n'est collé : le résultat s'affiche dans le panneau avec un
-   bouton Copier.
-
-Une réponse vide, coupée ou hors sujet ne remplace jamais le texte. Les champs
-de mot de passe sont ignorés. L'app ne garde aucun historique ; son journal
-(`~/Library/Logs/com.digitalunicorn.unicorn-rewrite/`) contient des durées et
-des codes d'erreur, jamais de texte.
-
-## Limites
-
-- Dans les éditeurs riches (Notes, Mail, Google Docs), le texte remplacé perd
-  sa mise en forme interne (gras, liens).
-- ↺ ne fonctionne que dans les apps qui exposent le texte par Accessibility.
-  Ailleurs, le ⌘Z de l'app fait l'affaire.
-- Dans les apps Electron, changer de sélection dans le même champ pendant le
-  traitement n'est pas détecté.
-- Pendant le traitement (en général moins d'une seconde), Échap est capturé par
-  l'app.
-
-Détail par app : [docs/compatibilite.md](docs/compatibilite.md).
-
-## Développement
-
-Tauri 2, Rust, React, TypeScript, Tailwind.
-
-```bash
-pnpm install
-pnpm app                          # lance l'app en développement
-UNICORN_REWRITE_MOCK=1 pnpm app   # sans clé : réponse simulée
-pnpm test && pnpm lint            # tests et lint du panneau
-pnpm test:rust                    # tests du natif
+```mermaid
+flowchart LR
+    A[Shortcut] --> B{Selection readable<br/>through Accessibility?}
+    B -- yes --> C[Read selection]
+    B -- no --> D[Copy with ⌘C<br/>then restore clipboard]
+    C --> E[OpenRouter<br/>fastest host, no reasoning]
+    D --> E
+    E --> F{Still the same<br/>app and field?}
+    F -- yes --> G[Replace in place]
+    F -- no --> H[Show result<br/>with Copy]
 ```
 
-Le code natif est dans `src-tauri/src` : `engine.rs` (déroulé d'une
-opération), `macos/` (Accessibility, presse-papiers), `ai/` (fournisseurs et
-prompt). Le panneau est dans `src/`.
+Native apps (Notes, Mail, TextEdit, Safari fields) are read and replaced through Accessibility, without touching the clipboard. Electron apps (Discord, Slack) go through a controlled copy and paste: your clipboard is put back afterwards, in every format, unless you copied something new in the meantime.
 
-Publier une version : incrémenter `version` dans `src-tauri/tauri.conf.json`,
-puis `scripts/release.sh` (voir l'en-tête du script).
+An empty, cut-off or runaway answer never replaces your text. Password fields are skipped.
+
+## Privacy
+
+The selected text is sent to OpenRouter, and from there to the host of the model you picked, only when you press the shortcut. The app keeps no history. Its log (`~/Library/Logs/com.digitalunicorn.unicorn-rewrite/`) records timings and error codes, never text or keys.
+
+## Shortcuts
+
+| Keys | Action |
+| --- | --- |
+| <kbd>⌃</kbd><kbd>⌥</kbd><kbd>R</kbd> | Rewrite the selection (change it in Settings) |
+| <kbd>Esc</kbd> | Cancel while a rewrite is running |
+| <kbd>⌘</kbd><kbd>Q</kbd> | Quit, while the panel is focused |
+
+## Limitations
+
+- In rich editors (Notes, Mail, Google Docs), formatting inside the selection (bold, links) is lost.
+- The ↺ button only works in apps that expose their text through Accessibility. Elsewhere, the app's own <kbd>⌘</kbd><kbd>Z</kbd> works.
+- In Electron apps, changing the selection inside the same field during a rewrite isn't detected.
+- Apple Silicon only for now.
+
+Per-app notes: [docs/compatibility.md](docs/compatibility.md).
+
+## Development
+
+Tauri 2, Rust, React 19, TypeScript, Tailwind 4.
+
+```sh
+pnpm install
+pnpm app                          # run the app
+UNICORN_REWRITE_MOCK=1 pnpm app   # no key needed: fake answers
+pnpm test && pnpm lint            # panel
+pnpm test:rust                    # native side
+OPENROUTER_API_KEY=… cargo test --manifest-path src-tauri/Cargo.toml live_ -- --ignored --nocapture
+```
+
+| Path | What's there |
+| --- | --- |
+| `src-tauri/src/engine.rs` | One rewrite, from shortcut to replacement, and its safety checks |
+| `src-tauri/src/macos/` | Accessibility, clipboard, synthetic ⌘C/⌘V |
+| `src-tauri/src/ai/` | OpenRouter client, model catalog, prompt and answer checks |
+| `src/` | The menu bar panel |
+
+To release: bump `version` in `src-tauri/tauri.conf.json`, then run `scripts/release.sh`.
