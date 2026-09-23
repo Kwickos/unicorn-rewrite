@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-restore-last"
+description = "Enables the restore_last command without any pre-configured scope."
+commands.allow = ["restore_last"]
+
+[[permission]]
+identifier = "deny-restore-last"
+description = "Denies the restore_last command without any pre-configured scope."
+commands.deny = ["restore_last"]

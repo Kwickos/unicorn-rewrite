@@ -1,0 +1,42 @@
+{
+  "name": "unicorn-rewrite",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Corriger et reformuler le texte sélectionné dans n'importe quelle app macOS, d'un raccourci.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "test": "node --test \"src/**/*.test.ts\"",
+    "test:rust": "cargo test --manifest-path src-tauri/Cargo.toml",
+    "app": "tauri dev",
+    "app:open": "UNICORN_REWRITE_KEEP_OPEN=1 tauri dev",
+    "app:build": "tauri build",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.8.0",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@tauri-apps/api": "^2.11.1",
+    "@tauri-apps/plugin-autostart": "^2.5.1",
+    "cn": "^0.2.6",
+    "lucide-react": "^1.42.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "shadcn": "^4.21.0",
+    "tailwindcss": "^4.3.3",
+    "tw-animate-css": "^1.4.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.4",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.1.0",
+    "oxlint": "^1.79.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.2.2"
+  }
+}
